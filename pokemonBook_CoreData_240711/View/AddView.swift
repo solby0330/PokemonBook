@@ -28,7 +28,6 @@ class AddView: UIView, UITextViewDelegate {
     rB.setTitleColor(.systemPink, for: .highlighted)
     rB.setTitle("랜덤 이미지 생성", for: .normal)
     rB.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-    rB.addTarget(self, action: #selector(changeImage), for: .touchUpInside)
     return rB
   }()
   
@@ -106,11 +105,6 @@ class AddView: UIView, UITextViewDelegate {
       $0.trailing.equalToSuperview().offset(-20)
       $0.size.equalTo(CGSize(width: 200, height: 40))
     }
-  }
-  
-  //이미지 불러오는 메서드
-  @objc func changeImage() {
-    profileImage.kf.setImage(with: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(Int.random(in: 1...1000)).png"))
   }
   
   //UITextViewDelegate 메서드들 추가

@@ -8,14 +8,21 @@
 import UIKit
 import CoreData
 import SnapKit
+import Kingfisher
 
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+  
+  var container: NSPersistentContainer!
   let tableView = UITableView()
+  var phoneBookList: [PhoneBook]  = []
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    //appDelegate가 AppDelegate에 접근할 수 있도록 타입캐스팅
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    self.container = appDelegate.persistentContainer
     
     tableView.delegate = self
     tableView.dataSource = self
@@ -32,6 +39,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(navigationButton))
     
     setUpTableView()
+    readAllData()
   }
   
   private func setUpTableView() {
@@ -46,7 +54,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
   
   //테이블뷰 셀 개수
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 6 // 추후 변경
+    return phoneBookList.count
   }
   
   //테이블뷰 셀이 필요할 때마다 해당 메서드를 호출한다(셀이 없다면 새로운 셀을 생성한다)
@@ -56,6 +64,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as? TableViewCell else {
       return UITableViewCell()
     }
+    cell.nameLabel.text = phoneBookList[indexPath.item].name
+    cell.numberLabel.text = phoneBookList[indexPath.item].phoneNumber
+    cell.imgView.kf.setImage(with: URL(string: phoneBookList[indexPath.item].profileImage!))
     return cell
   }
   
@@ -65,35 +76,20 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     self.navigationController?.pushViewController(pressedButton, animated: true)
   }
   
-//  //coreData에 Data Create
-//  func creatData(name: String, phoneNumber: String) {
-//    guard let entity = NSEntityDescription.entity(forEntityName: PhoneBook.className, in: self.container.viewContext) else { return }
-//    let newPhoneBook = NSManagedObject(entity: entity, insertInto: self.container.viewContext)
-//    newPhoneBook.setValue(name, forKey: PhoneBook.Key.name)
-//    newPhoneBook.setValue(phoneNumber, forKey: PhoneBook.Key.phoneNumber)
-//    
-//    do {
-//      try self.container.viewContext.save()
-//      print("저장 성공")
-//    } catch {
-//      print("저장 실패")
-//    }
-//  }
-//  
-//  //coreData에서 Data Read
-//  func readAllData() {
-//    do {
-//      let phoneBook = try self.container.viewContext.fetch(PhoneBook.fetchRequest())
-//      
+  //coreData에서 Data Read
+  func readAllData() {
+    do {
+      phoneBookList = try self.container.viewContext.fetch(PhoneBook.fetchRequest())
 //      for phoneBook in phoneBook as [NSManagedObject] {
 //        if let name = phoneBook.value(forKey: PhoneBook.Key.name) as? String,
-//           let phoneNumber = phoneBook.value(forKey: PhoneBook.Key.phoneNumber) as? String {
-//          print("name: \(name), phoneNumber: \(phoneNumber)")
+//           let phoneNumber = phoneBook.value(forKey: PhoneBook.Key.phoneNumber) as? String,
+//           let profileImage = phoneBook.value(forKey: PhoneBook.Key.profileImage) as? String{
+//          print("name: \(name), phoneNumber: \(phoneNumber), profileImage: \(profileImage)")
 //        }
 //      }
-//    } catch {
-//      print("데이터 읽기 실패")
-//    }
-//  }
+    } catch {
+      print("데이터 읽기 실패")
+    }
   }
-  
+}
+
