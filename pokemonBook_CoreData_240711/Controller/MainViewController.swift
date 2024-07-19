@@ -39,6 +39,10 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(navigationButton))
     
     setUpTableView()
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     readAllData()
   }
   
@@ -76,20 +80,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     self.navigationController?.pushViewController(pressedButton, animated: true)
   }
   
-  //coreData에서 Data Read
+  //coreData에서 Data Read 및 메인컨트롤러 업데이트
   func readAllData() {
     do {
       phoneBookList = try self.container.viewContext.fetch(PhoneBook.fetchRequest())
-//      for phoneBook in phoneBook as [NSManagedObject] {
-//        if let name = phoneBook.value(forKey: PhoneBook.Key.name) as? String,
-//           let phoneNumber = phoneBook.value(forKey: PhoneBook.Key.phoneNumber) as? String,
-//           let profileImage = phoneBook.value(forKey: PhoneBook.Key.profileImage) as? String{
-//          print("name: \(name), phoneNumber: \(phoneNumber), profileImage: \(profileImage)")
-//        }
-//      }
     } catch {
       print("데이터 읽기 실패")
     }
+    tableView.reloadData()
   }
 }
 
